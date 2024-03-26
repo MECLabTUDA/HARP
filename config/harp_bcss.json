@@ -1,0 +1,24 @@
+{
+    "name": "pipeline_bcss", 
+    "gpu_ids": [0], 
+    "model_pth": "/local/scratch/sharvien/HARP_Model_Weights/restoration_model.pth",
+    "train_config_pth": "/gris/gris-f/homestud/ssivakum/img2img/config/config_restoration_model.json",
+
+    "pipeline": {
+        "image_folder_path": "/gris/gris-f/homestud/ssivakum/img2img/result/harp_test",
+        "result_folder_path": "/gris/gris-f/homestud/ssivakum/img2img/result/harp_test_result",
+        "batch_size": 8,
+        "image_size": [256, 256],
+        
+        "heatmap": {
+            "n_noising_step": 100,
+            "n_iter": 25
+        },
+
+        "anomalib": {
+            "config_path": "/gris/gris-f/homestud/ssivakum/img2img/config/config_fastflow.yaml",
+            "checkpoint_path": "/local/scratch/sharvien/HARP_Model_Weights/fastflow.ckpt",
+            "prediction_threshold": 0.63509
+        }
+    }
+}
