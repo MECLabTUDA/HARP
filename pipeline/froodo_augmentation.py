@@ -44,6 +44,6 @@ def get_artifacted_image(dataset_index):
     segmentation_mask = s['segmentation_mask']
     return images, ood_mask, segmentation_mask
 
-# artifacted_images, ood_mask, segmentation_mask = get_artifacted_image(2)
-# ut.save_image(artifacted_images[0], "/gris/gris-f/homestud/ssivakum/denoising_diffusion/logs/temp/temp4.png")
+artifacted_images, ood_mask, segmentation_mask = get_artifacted_image(2)
+ut.save_image(artifacted_images[0], "/gris/gris-f/homestud/ssivakum/denoising_diffusion/logs/temp/temp4.png")
 

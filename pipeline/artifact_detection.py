@@ -11,13 +11,12 @@ from anomalib.models import get_model
 from anomalib.utils.callbacks import get_callbacks
 
 
-def artifact_detection(config_path, checkpoint_path, input_path, output_path=None):
+def artifact_detection(config_path, checkpoint_path, input_path):
 
     args = Namespace(
     config=Path(config_path),
     weights=Path(checkpoint_path),
     input=Path(input_path),
-    output=output_path,
     visualization_mode="full",
     show=False)
     
@@ -39,12 +38,9 @@ def artifact_detection(config_path, checkpoint_path, input_path, output_path=Non
     # get the transforms
     transform_config = config.dataset.transform_config.eval if "transform_config" in config.dataset.keys() else None
     image_size = (config.dataset.image_size[0], config.dataset.image_size[1])
-    center_crop = config.dataset.get("center_crop")
-    if center_crop is not None:
-        center_crop = tuple(center_crop)
     normalization = InputNormalizationMethod(config.dataset.normalization)
     transform = get_transforms(
-        config=transform_config, image_size=image_size, center_crop=center_crop, normalization=normalization)
+        config=transform_config, image_size=image_size, normalization=normalization)
 
     # create the dataset
     dataset = InferenceDataset(
@@ -55,7 +51,7 @@ def artifact_detection(config_path, checkpoint_path, input_path, output_path=Non
     predictions = trainer.predict(model=model, dataloaders=[dataloader])
     return predictions
 
-def inpaint_ranking(config_path, checkpoint_path, inpaint_path):
+def inpaint_ranking(config_path, checkpoint_path, inpainted_image_list):
     inpaint_ranking = []
     predictions = artifact_detection(config_path, checkpoint_path, inpaint_path)
 

@@ -3,6 +3,8 @@ import cv2
 import os
 from skimage.metrics import structural_similarity as ssim
 
+#TODO: Maybe delete this file entirely
+
 #FYI: Mean Squared Error (MSE)
 def mse_score(image1, image2):
     err = np.mean((image1 - image2) ** 2)
