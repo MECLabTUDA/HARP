@@ -1,9 +1,7 @@
 #This will take root mask file, find all the binary mask file, and arrange the binary file based on a score
 #Score would be mix of mask density (using heatmap) and area (normalised)
-import os
 import cv2
 import numpy as np
-from skimage.metrics import structural_similarity as ssim
 
 def artifact_inverting(combined_mask_list):
     #FYI: Go thorugh the files of mask and generated iverted masks for mask above 50%
@@ -18,8 +16,7 @@ def artifact_inverting(combined_mask_list):
             inverted_binary_mask_image = np.where(mask == 0, 255, 0)
             inverted_mask = mask_.copy()
             inverted_mask['mask'] = inverted_binary_mask_image
-            combined_mask_list.append(inverted_mask)
-        
+            combined_mask_list.append(inverted_mask)      
     return combined_mask_list
 
 
@@ -69,7 +66,6 @@ def artifact_ranking(combined_mask_list, heat_map, artifact_image_path):
         filter_artifact = artifact_image[white_pixel_mask]
         average_masked_pixel_value = np.mean(filter_artifact)
 
-        #TODO: Double check this parameter
         if average_masked_pixel_value > 15:
             entry = mask_.copy()
             entry['score'] = score

@@ -1,0 +1,35 @@
+{
+    "name": "pipeline_bcss", 
+    "gpu_ids": [0], 
+
+    "pipeline": {
+        "image_folder_path": "", //UPDATE
+        "result_folder_path": "",
+        "batch_size": 8,
+        "image_size": [256, 256],
+        "gpu_id": "0", //Use "-1" for CPU
+
+        "anomalib": {
+            "config_path": "./config/config_anomalib_fastflow.yaml",
+            "model_path": "", //UPDATE
+            "prediction_threshold": 0.63509
+        },
+        
+        "sam": {
+            "model_type": "default",
+            "sam_checkpoint": "", //UPDATE
+        },
+        
+        "heatmap": {
+            "n_noising_step": 100,
+            "n_iter": 15
+        },
+
+        "restoration_model": {
+            "config_path": "./config/config_restoration_model.json",
+            "model_path": "", //UPDATE
+            "top_k": 5
+
+        }
+    }
+}

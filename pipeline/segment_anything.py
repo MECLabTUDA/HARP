@@ -4,11 +4,6 @@ import os
 from typing import Any, Dict, List
 import numpy as np
 
-#TODO: Shift this all to config files
-model_type = 'default'
-sam_checkpoint = "/local/scratch/sharvien/HARP_Model_Weights/sam_vit_h_4b8939.pth"
-device = "cuda"
-
 def write_masks_to_folder(masks: List[Dict[str, Any]]):
     header = "id,area,bbox_x0,bbox_y0,bbox_w,bbox_h,point_input_x,point_input_y,predicted_iou,stability_score,crop_box_x0,crop_box_y0,crop_box_w,crop_box_h"  # noqa
     metadata = [header]
@@ -53,9 +48,9 @@ def write_masks_to_png(masks: List[Dict[str, Any]], image, mask_path: str, base)
     cv2.imwrite(os.path.join(mask_path, base + '_mask_overlay.png'), result)
 
 
-def create_sam_masks(input, mask_path=None):
-    sam = sam_model_registry[model_type](sam_checkpoint)
-    _ = sam.to(device)
+def create_sam_masks(input, config, mask_path=None):
+    sam = sam_model_registry[config["sam_model_type"]](config["sam_checkpoint"])
+    _ = sam.to(config["device"])
     generator = SamAutomaticMaskGenerator(sam, output_mode="binary_mask")
     if not os.path.isdir(input):
         targets = [input]
@@ -83,5 +78,6 @@ def create_sam_masks(input, mask_path=None):
                 f.write("\n".join(metadata))
             for mask, i in enumerate(output):
                 filename = f"{i}.png"
-                cv2.imwrite(os.path.join(mask_path, filename), mask)   
+                cv2.imwrite(os.path.join(mask_path, filename), mask)
+                 
     return output

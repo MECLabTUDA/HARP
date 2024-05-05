@@ -1,5 +1,11 @@
-from collections import OrderedDict
 import json
+import os
+import argparse
+import core.praser as Praser
+
+def manage_path(dir):
+    base_path = os.path.dirname(os.path.dirname(__file__))
+    return  os.path.normpath(os.path.join(base_path, dir))
 
 def load_config(file_path):
     json_str = ""
@@ -16,10 +22,31 @@ def parse(args):
     config["result_folder_path"] = config["pipeline"]["result_folder_path"]
     config["batch_size"] = config["pipeline"]["batch_size"]
     config["image_size"] = config["pipeline"]["image_size"]
-    config["anomalib_config_path"] = config["pipeline"]["anomalib"]["config_path"]
-    config["anomalib_checkpoint_path"] = config["pipeline"]["anomalib"]["checkpoint_path"]
+    config["device"] = "cuda"
+    config["gpu_id"] = "0"
+    
+    config["anomalib_config_path"] = manage_path(config["pipeline"]["anomalib"]["config_path"])
+    config["anomalib_model_path"] = config["pipeline"]["anomalib"]["model_path"]
     config["anomalib_prediction_threshold"] = config["pipeline"]["anomalib"]["prediction_threshold"]
+    
+    config["sam_model_type"] = config["pipeline"]["sam"]["model_type"]
+    config["sam_checkpoint"] = config["pipeline"]["sam"]["sam_checkpoint"]
+
     config["n_noising_step"] = config["pipeline"]["heatmap"]["n_noising_step"]
     config["n_iter"] = config["pipeline"]["heatmap"]["n_iter"]
-    config["top_k"] = config["pipeline"]["restoration"]["top_k"]
+    
+    config["restoration_config_path"] = manage_path(config["pipeline"]["restoration_model"]["config_path"])
+    config["restoration_model_path"] = config["pipeline"]["restoration_model"]["model_path"]
+    config["restoration_top_k"] = config["pipeline"]["restoration_model"]["top_k"]
+
+    args = argparse.Namespace(config=config["restoration_config_path"], 
+                              phase="test",
+                              batch=config["batch_size"],
+                              gpu_ids=config["gpu_id"],
+                              debug=False)
+    opt = Praser.parse(args)
+    config["config_restoration"] = opt
+
     return config
+
+

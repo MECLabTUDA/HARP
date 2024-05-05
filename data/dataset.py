@@ -4,9 +4,6 @@ from PIL import Image
 import os
 import torch
 import numpy as np
-from torchvision.utils import save_image
-import random
-import cv2
 
 from .util.mask import (bbox2mask, brush_stroke_mask, get_irregular_mask, random_bbox, random_cropping_bbox, diagonal_corner, box_corner, empty_mask)
 
@@ -64,13 +61,6 @@ class InpaintDataset(data.Dataset):
         path = self.imgs[index]
         img = self.tfs(self.loader(path))
         mask = self.get_mask()
-        
-        # path = '/local/scratch/BCSS_ood_removal/112/artifacts/air_bubble/air_bubble.png'
-        # binary_mask_image = cv2.imread("/local/scratch/BCSS_ood_removal/112/artifacts/air_bubble/methods/repaint/masks/ranked/3_dbscan_mask1.png")
-        # kernel_size = 35
-        # kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel_size, kernel_size))
-        # enlarged_mask = cv2.dilate(binary_mask_image, kernel, iterations=2)
-        # mask = self.tfs_mask(enlarged_mask)
         
         cond_image = img*(1. - mask) + mask*torch.randn_like(img)
         mask_img = img*(1. - mask) + mask

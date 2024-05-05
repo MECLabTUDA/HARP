@@ -138,7 +138,7 @@ class Network(BaseNetwork):
             #FYI: Moving backwards
             else:  
                 noise = torch.randn_like(y_0)
-                t = torch.full((b,), time_next+1, device=y_0.device, dtype=torch.long) #TODO: Initially time_next+1 do multiple options
+                t = torch.full((b,), time_next+1, device=y_0.device, dtype=torch.long)
                 alpha = extract(self.alphas, t, x_shape=(1, 1)) 
                 alpha = alpha.view(-1, 1, 1, 1)
                 y_noised = (alpha).sqrt() * y_t + (1-alpha).sqrt() * noise

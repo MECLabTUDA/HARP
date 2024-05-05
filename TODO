@@ -1,6 +1,0 @@
-# TODO
-# Maybe an option to apply frodo augmentations separately
-# Write instructions for anomalib training (Maybe a general instruction to use any of the detection algorithm)
-# Analyse all artifact detection at once and then do cleaning one by one
-# Check if timing is okay
-# Parametrise all things to config

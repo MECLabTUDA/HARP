@@ -1,8 +1,12 @@
+import os
+import shutil
+
 from argparse import Namespace
 from pathlib import Path
 
 from pytorch_lightning import Trainer
 from torch.utils.data import DataLoader
+from core.util import save_tensor_as_img
 
 from anomalib.config import get_configurable_parameters
 from anomalib.data.inference import InferenceDataset
@@ -10,13 +14,13 @@ from anomalib.data.utils import InputNormalizationMethod, get_transforms
 from anomalib.models import get_model
 from anomalib.utils.callbacks import get_callbacks
 
-
-def artifact_detection(config_path, checkpoint_path, input_path):
+def artifact_detection(config_path, checkpoint_path, input_path, output_path=None):
 
     args = Namespace(
     config=Path(config_path),
     weights=Path(checkpoint_path),
     input=Path(input_path),
+    output=output_path,
     visualization_mode="full",
     show=False)
     
@@ -51,20 +55,22 @@ def artifact_detection(config_path, checkpoint_path, input_path):
     predictions = trainer.predict(model=model, dataloaders=[dataloader])
     return predictions
 
-def inpaint_ranking(config_path, checkpoint_path, inpainted_image_list):
-    inpaint_ranking = []
-    predictions = artifact_detection(config_path, checkpoint_path, inpaint_path)
+def inpaint_ranking(config_path, checkpoint_path, result_path, inpainted_image_list):
+    temp_path = os.path.join(result_path, "temp")
+    os.makedirs(temp_path, exist_ok=True)
+    for image in inpainted_image_list:
+        inpainted_file_path = os.path.join(temp_path, image["name"]+"_"+str(image["index"])+".png")
+        save_tensor_as_img(image["restored_image"], inpainted_file_path)
+        
+    predictions = artifact_detection(config_path, checkpoint_path, temp_path)
 
     for pred in predictions:
-        image_path = pred["image_path"][0]
+        image_name = os.path.basename(pred["image_path"][0])
+        name, index = image_name.split(".")[0].split("_")
         pred_score = pred["pred_scores"].numpy().item()
-        inpaint_ranking.append([image_path, pred_score])
-
-    inpaint_ranking = sorted(inpaint_ranking, key=lambda x: x[1])
-    return inpaint_ranking
-
-# input_path = "/gris/gris-f/homestud/ssivakum/img2img/result/11/artifacts/air_bubble/methods/repaint/repaint"
-# output_path = "/gris/gris-f/homestud/ssivakum/img2img/result/anomalib/output"
-# config_path = "/gris/gris-f/homestud/ssivakum/img2img/config/config_fastflow.yaml"
-# checkpoint_path = "/local/scratch/BCSS_Weights_MA_MiSc/Anomalib_Weights/fastflow.ckpt"
-# inpaint_ranking(config_path, checkpoint_path, input_path)
+        for image in inpainted_image_list:
+            if image["name"] == name and image["index"] == int(index):
+                image["artifact_pred"] = pred_score
+                
+    shutil.rmtree(temp_path)
+    return inpainted_image_list

@@ -1,5 +1,4 @@
 import glob
-import argparse
 import cv2
 import os
 import torch

@@ -2,13 +2,13 @@
     "name": "inpainting_bcss", 
     "gpu_ids": [0], 
     "seed" : -1,
-    "finetune_norm": false, // find the parameters to optimize
+    "finetune_norm": false,
 
     "path": {
-        "base_dir": "experiments", // base path for all log except resume_state
+        "base_dir": "experiments",
         "results": "results",
         "checkpoint": "checkpoint"
-        // "resume_state": "/gris/gris-f/homestud/ssivakum/img2img/experiments/train_inpainting_bcss_240118_000504/checkpoint/1000"
+        // "resume_state": "./experiments/train_inpainting_bcss_240118_000504/checkpoint/1000"
         // "resume_state": null // 100
     },
 
@@ -17,7 +17,7 @@
             "which_dataset": {
                 "name": ["data.dataset", "InpaintDataset"], 
                 "args":{
-                    "data_root": "/local/scratch/sharvien/BCSS/BCSS_training/BCSS_cropped_PNG",
+                    "data_root": "", //UPDATE,
                     "data_len": -1,
                     "image_size":[256, 256],
                     "mask_config": {
@@ -47,7 +47,7 @@
             "which_dataset": {
                 "name": "InpaintDataset", 
                 "args":{
-                    "data_root": "/local/scratch/sharvien/BCSS/BCSS_validation/BCSS_cropped_PNG",
+                    "data_root": "", //UPDATE
                     "mask_config": {
                         "mask_mode": "hybrid"
                     }
