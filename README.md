@@ -41,8 +41,6 @@ To train all the above models, we have have extracted patches from the BCSS data
 - `Dataset used for training and evaluation`: [Dataset](https://huggingface.co/SsharvienKumar/HARP_Models/resolve/main/dataset.zip?download=true)
 
 
-
-
 ## Usage
 1. To train the restoration model on your own dataset, use the following training script. Ensure to update the `data_root` path for both the train and validation split of the dataset accordingly. 
 ```
@@ -57,9 +55,7 @@ python harp_pipeline.py -c config/config_harp.json
 ```
 
 
-
 ## Results
-
 ### Qualitative Results
 <div>
 <img src="figure/artifact_samples.png" width="85%"/>
@@ -67,7 +63,7 @@ python harp_pipeline.py -c config/config_harp.json
 </div>
 
 This video shows the steps in the HARP Pipeline including our novel restoration method. 
-![](figure/HARP_video.mp4)
+https://github.com/MECLabTUDA/HARP/assets/77108842/8b00bdf4-3d2f-451e-8273-540c3abf6eae
 
 
 ### User Study
