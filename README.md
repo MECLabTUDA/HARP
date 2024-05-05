@@ -62,8 +62,9 @@ python harp_pipeline.py -c config/config_harp.json
 </p>
 </div>
 
+
 This video shows the steps in the HARP Pipeline including our novel restoration method. 
-<video src="https://github.com/MECLabTUDA/HARP/assets/77108842/8b00bdf4-3d2f-451e-8273-540c3abf6eae" width="300" />
+<video src="https://github.com/MECLabTUDA/HARP/assets/77108842/8eeff43d-7e7a-42d1-8ada-057ef4413dde" width="80" />
 
 
 ### User Study
