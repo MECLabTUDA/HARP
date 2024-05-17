@@ -21,11 +21,20 @@ jobs:
       with:
         auto-update-conda: true
         python-version: 3.11
+
+    - name: Initialize conda
+      run: |
+        conda init bash
+        source ~/.bashrc
     
     - name: Create and activate conda environment
       run: |
         conda env create -f environment.yaml
         conda activate harp
+        echo "---------------------------------------------"
+        pwd
+        echo "---------------------------------------------"
+
     
     - name: Clone Anomalib repository and install
       run: |
