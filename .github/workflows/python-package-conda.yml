@@ -10,39 +10,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Set up Python 3.11.4
-      uses: actions/setup-python@v3
+
+    - name: Install Miniconda	
+      uses: conda-incubator/setup-miniconda@v3
       with:
-        python-version: '3.11.4'
-    
-    - name: Set up Miniconda
-      uses: conda-incubator/setup-miniconda@v2
-      with:
-        auto-update-conda: true
+        auto-update-conda: false
+        activate-environment: harp
+        environment-file: environment.yaml
         python-version: 3.11
 
-    - name: Initialize conda
-      run: |
-        conda init bash
-        source ~/.bashrc
-    
-    - name: Create and activate conda environment
-      run: |
-        conda env create -f environment.yaml
-        conda activate harp
-        echo "---------------------------------------------"
-        pwd
-        echo "---------------------------------------------"
-
-    
-    - name: Clone Anomalib repository and install
-      run: |
-        cd .. 
-        git clone --branch v0.7.0 https://github.com/openvinotoolkit/anomalib.git
-        cd anomalib 
-        pip install -e .
-    
     - name: Lint with flake8
       run: |
         conda install flake8
@@ -50,7 +26,7 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    
+
     - name: Test with pytest
       run: |
         conda install pytest

@@ -16,16 +16,13 @@ This is the official code repository for *Unsupervised Histopathological Artifac
 
 
 ## Installation
-To set up HARP, start by cloning the repository and navigate to the `environment.yaml` file to install the [conda](https://conda.io/) environment named `harp`. Activate the Conda environment. We also need a specific version of the [Anomalib](https://github.com/openvinotoolkit/anomalib.git) repo. Follow the instructions below to install them:
+To set up HARP, start by cloning the repository and navigate to the `environment.yaml` file to install the [conda](https://conda.io/) environment named `harp`. Activate the Conda environment.
 
 ```
 git clone https://github.com/MECLabTUDA/HARP.git
 cd HARP
 conda env create -f environment.yaml
 conda activate harp
-
-cd .. && git clone --branch v0.7.0 https://github.com/openvinotoolkit/anomalib.git
-cd anomalib && pip install -e .
 ```
 
 
