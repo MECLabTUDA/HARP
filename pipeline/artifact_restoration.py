@@ -3,15 +3,13 @@ import torch
 import cv2
 import numpy as np
 from torchvision import transforms
-from PIL import Image
 
 from core.util import set_device
 from models.network import Network
 
-class ModelLoader:
+class RestorationModel:
     def __init__(self, config):
         self.config = config
-        
         model_args = config["config_restoration"]["model"]["which_networks"][0]["args"]
         model_path = config["restoration_model_path"]
         self.model = Network(**model_args)
@@ -22,15 +20,11 @@ class ModelLoader:
         self.model.set_new_noise_schedule(phase='test')
         self.model.eval()
 
-    def noising_and_denoising_map(self, input_path, n_noising_step, n_iter, batch_size):
-        img = Image.open(input_path).convert('RGB')
-        transform = transforms.Compose([
-                    transforms.Resize((256, 256)),
-                    transforms.ToTensor(),
-                    transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5,0.5, 0.5])
-                    ])
-        img = transform(img)
-        img = set_device(img.unsqueeze(0))
+    def noising_and_denoising_map(self, config, img):
+        n_noising_step = config["n_noising_step"]
+        n_iter = config["n_iter"]
+        batch_size = config["batch_size"]
+
         img = torch.cat([img] * n_iter, dim=0)
 
         sampled_images = []
@@ -48,41 +42,31 @@ class ModelLoader:
         return sampled_images
 
 
-    def inpaint(self, input_path, ranked_mask_list, batch_size):
-        transform = transforms.Compose([
-                    transforms.Resize((256, 256)),
-                    transforms.ToTensor(),
-                    transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5,0.5, 0.5])
-                    ])
+    def inpaint(self, img, ranked_mask_list, batch_size):
+        #TODO: Still need to remove the 256 sizing
         transform_mask = transforms.Compose([
                     transforms.ToPILImage(),
-                    transforms.Resize((256, 256)), 
                     transforms.ToTensor()
                     ])
         
-        img = Image.open(input_path).convert('RGB')
-        img = transform(img)
-        gt_image_list, cond_image_list, mask_list, inpainted_image_list = [], [], [], []
-        
+        gt_image_list, cond_image_list, mask_list = [], [], []
+
         for mask_ in ranked_mask_list:
             mask = mask_["mask_dilated"]
             mask = transform_mask(mask)
-            mask = (mask[0,:,:]).unsqueeze(0)
+            mask = (mask[0,:,:]).unsqueeze(0).unsqueeze(0)
+            mask = set_device(mask)
 
             cond_image = img*(1. - mask) + mask*torch.randn_like(img)
             cond_image = cond_image
 
-            gt_image_list.append(img.unsqueeze(0))
-            cond_image_list.append(cond_image.unsqueeze(0))
-            mask_list.append(mask.unsqueeze(0))
+            gt_image_list.append(img)
+            cond_image_list.append(cond_image)
+            mask_list.append(mask)
         
         gt_images = torch.cat(gt_image_list, dim=0)
         cond_images = torch.cat(cond_image_list, dim=0)
         masks = torch.cat(mask_list, dim=0)
-
-        gt_images = set_device(gt_images)
-        cond_images = set_device(cond_images)
-        masks = set_device(masks)
         
         for n in range(0, len(mask_list), batch_size):
             gt_image = gt_images[n:n+batch_size,:,:,:]
@@ -99,42 +83,32 @@ class ModelLoader:
             return ranked_mask_list
 
 
-    def inpaint_with_jump_sampling(self, input_path, ranked_mask_list, batch_size):
-        transform = transforms.Compose([
-                    transforms.Resize((256, 256)),
-                    transforms.ToTensor(),
-                    transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5,0.5, 0.5])
-                    ])
+    def inpaint_with_jump_sampling(self, img, ranked_mask_list, batch_size):
+        #TODO: Still need to remove the 256 sizing
         transform_mask = transforms.Compose([
                     transforms.ToPILImage(),
-                    transforms.Resize((256, 256)), 
                     transforms.ToTensor()
                     ])
         
-        img = Image.open(input_path).convert('RGB')
-        img = transform(img)
-        gt_image_list, cond_image_list, mask_list, inpainted_image_list = [], [], [], []
-        
+        gt_image_list, cond_image_list, mask_list = [], [], []
+
         for mask_ in ranked_mask_list:
             mask = mask_["mask_dilated"]
             mask = transform_mask(mask)
-            mask = (mask[0,:,:]).unsqueeze(0)
+            mask = (mask[0,:,:]).unsqueeze(0).unsqueeze(0)
+            mask = set_device(mask)
 
             cond_image = img*(1. - mask) + mask*torch.randn_like(img)
             cond_image = cond_image
 
-            gt_image_list.append(img.unsqueeze(0))
-            cond_image_list.append(cond_image.unsqueeze(0))
-            mask_list.append(mask.unsqueeze(0))
+            gt_image_list.append(img)
+            cond_image_list.append(cond_image)
+            mask_list.append(mask)
         
         gt_images = torch.cat(gt_image_list, dim=0)
         cond_images = torch.cat(cond_image_list, dim=0)
         masks = torch.cat(mask_list, dim=0)
 
-        gt_images = set_device(gt_images)
-        cond_images = set_device(cond_images)
-        masks = set_device(masks)
-        
         for n in range(0, len(mask_list), batch_size):
             gt_image = gt_images[n:n+batch_size,:,:,:]
             cond_image = cond_images[n:n+batch_size,:,:,:]

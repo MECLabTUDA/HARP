@@ -1,0 +1,122 @@
+dataset:
+  abnormal_dir: test_manipulated
+  center_crop: null
+  create_validation_set: true
+  eval_batch_size: 16
+  extensions: null
+  format: folder
+  image_size:
+  - 512
+  - 512
+  mask: Test_Masks
+  name: fastflow
+  normal_dir: train_original
+  normal_test_dir: test_original
+  normalization: imagenet
+  num_workers: 16
+  path: .
+  task: classification
+  test_split_mode: from_dir
+  test_split_ratio: 0.2
+  tiling:
+    apply: false
+    random_tile_count: 16
+    remove_border_count: 0
+    stride: null
+    tile_size: null
+    use_random_tiling: false
+  train_batch_size: 1
+  transform_config:
+    eval: null
+    train: null
+  val_split_mode: from_test
+  val_split_ratio: 0.5
+  mask_dir: Test_Masks
+  root: .
+logging:
+  log_graph: false
+  logger: []
+metrics:
+  image:
+  - F1Score
+  - AUROC
+  - Accuracy
+  - Dice
+  pixel:
+  - F1Score
+  - AUROC
+  threshold:
+    manual_image: null
+    manual_pixel: null
+    method: adaptive
+model:
+  backbone: wide_resnet50_2
+  conv3x3_only: true
+  early_stopping:
+    metric: pixel_AUROC
+    mode: max
+    patience: 3
+  flow_steps: 8
+  hidden_ratio: 1.0
+  lr: 0.001
+  name: fastflow
+  normalization_method: min_max
+  pre_trained: true
+  weight_decay: 1.0e-05
+  input_size:
+  - 512
+  - 512
+optimization:
+  export_mode: null
+project:
+  path: fastflow/fastflow/run
+  seed: 321
+  unique_dir: false
+trainer:
+  accelerator: auto
+  accumulate_grad_batches: 1
+  auto_lr_find: false
+  auto_scale_batch_size: false
+  benchmark: false
+  check_val_every_n_epoch: 1
+  default_root_dir: fastflow/fastflow/run
+  detect_anomaly: false
+  deterministic: false
+  devices:
+  - 0
+  enable_checkpointing: true
+  enable_model_summary: true
+  enable_progress_bar: true
+  fast_dev_run: false
+  gradient_clip_algorithm: norm
+  gradient_clip_val: 0
+  limit_predict_batches: 1.0
+  limit_test_batches: 1.0
+  limit_train_batches: 1.0
+  limit_val_batches: 1.0
+  log_every_n_steps: 50
+  max_epochs: 50
+  max_steps: -1
+  max_time: null
+  min_epochs: null
+  min_steps: null
+  move_metrics_to_cpu: false
+  multiple_trainloader_mode: max_size_cycle
+  num_nodes: 1
+  num_sanity_val_steps: 0
+  overfit_batches: 0.0
+  plugins: null
+  precision: 32
+  profiler: null
+  reload_dataloaders_every_n_epochs: 0
+  replace_sampler_ddp: true
+  strategy: null
+  sync_batchnorm: false
+  track_grad_norm: -1
+  val_check_interval: 1.0
+visualization:
+  image_save_path: .
+  log_images: false
+  mode: full
+  save_images: false
+  show_images: false
