@@ -18,7 +18,7 @@ This is the official code repository for *Unsupervised Histopathological Artifac
 ## Installation
 To set up HARP, start by cloning the repository and navigate to the `environment.yaml` file to install the [conda](https://conda.io/) environment named `harp`. Activate the Conda environment.
 
-```
+```shell
 git clone https://github.com/MECLabTUDA/HARP.git
 cd HARP
 conda env create -f environment.yaml
@@ -52,7 +52,7 @@ python harp_pipeline.py -c config/config_harp.json
 ```
 
 ## Usage as PyPI Package
-```
+```python
 from harp_pipeline import HARP, HARPDataset
 
 harp = HARP("path/to/config_harp.json")
