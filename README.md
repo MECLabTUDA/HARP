@@ -51,6 +51,17 @@ python train_restoration.py -p train -c config/config_restoration_model.json
 python harp_pipeline.py -c config/config_harp.json
 ```
 
+## Usage as PyPI Package
+```
+from harp_pipeline import HARP, HARPDataset
+
+harp = HARP("path/to/config_harp.json")
+dataset = HARPDataset(harp.config["input_folder_path"], harp.config["image_size"])
+
+for image in dataset:
+        restored_image, restored_mask = harp.harp_pipeline(image)
+```
+
 
 ## Results
 ### Qualitative Results

@@ -2,21 +2,22 @@
     "name": "pipeline_bcss",  
 
     "pipeline": {
-        "input_folder_path": "/gris/gris-f/homestud/ssivakum/img2img/result/harp_test", //UPDATE
-        "result_folder_path": "/gris/gris-f/homestud/ssivakum/img2img/result/harp_test_result", //UPDATE
+        "input_folder_path": "", //UPDATE
+        "result_folder_path": "", //UPDATE
         "batch_size": 8,
         "gpu_id": 0,
         "image_size": [256, 256],
+        "save_restored_image_mask": true, 
 
         "anomalib": {
             "config_path": "./config/config_anomalib_fastflow.yaml",
-            "model_path": "/local/scratch/sharvien/HARP_Model_Weights/fastflow.ckpt", //UPDATE
+            "model_path": "", //UPDATE
             "prediction_threshold": 0.63509
         },
         
         "sam": {
             "model_type": "default",
-            "sam_checkpoint": "/local/scratch/sharvien/HARP_Model_Weights/sam_vit_h_4b8939.pth" //UPDATE
+            "sam_checkpoint": "" //UPDATE
         },
         
         "heatmap": {
@@ -26,7 +27,7 @@
 
         "restoration_model": {
             "config_path": "./config/config_restoration_model.json",
-            "model_path": "/local/scratch/sharvien/HARP_Model_Weights/restoration_model.pth", //UPDATE
+            "model_path": "", //UPDATE
             "top_k": 5
 
         }

@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 from torchvision import transforms
 
-from core.util import set_device
+from core.util import set_device, tensor2image
 from models.network import Network
 
 class RestorationModel:
@@ -79,7 +79,7 @@ class RestorationModel:
             
             sampled_image = torch.chunk(output, batch_size, dim=0)
             for i in range(len(sampled_image)):
-                ranked_mask_list[n+i]["restored_image"] = sampled_image[i]
+                ranked_mask_list[n+i]["restored_image"] = tensor2image(sampled_image[i])
             return ranked_mask_list
 
 
@@ -120,5 +120,5 @@ class RestorationModel:
             
             sampled_image = torch.chunk(output, batch_size, dim=0)
             for i in range(len(sampled_image)):
-                ranked_mask_list[n+i]["restored_image"] = sampled_image[i]
+                ranked_mask_list[n+i]["restored_image"] = tensor2image(sampled_image[i])
             return ranked_mask_list

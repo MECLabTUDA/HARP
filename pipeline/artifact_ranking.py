@@ -34,7 +34,7 @@ def check_similarity(mask, processed_masks):
 
 def artifact_ranking(combined_mask_list, heat_map, artifact_image):
     processed_masks = []
-    ranked_mask_list = []
+    mask_restored_image_list = []
     #FYI: Searching through all files with just numbers in the parent directory to retrieve all binary masks
     for idx, mask_ in enumerate(combined_mask_list):  
         mask = mask_['mask']   
@@ -68,8 +68,8 @@ def artifact_ranking(combined_mask_list, heat_map, artifact_image):
         if average_masked_pixel_value > 15:
             entry = mask_.copy()
             entry['score'] = score
-            ranked_mask_list.append(entry)
+            mask_restored_image_list.append(entry)
 
     #FYI: Sorting the files according to score  
-    ranked_mask_list = sorted(ranked_mask_list, key=lambda x: x['score'])
-    return ranked_mask_list
+    mask_restored_image_list = sorted(mask_restored_image_list, key=lambda x: x['score'])
+    return mask_restored_image_list

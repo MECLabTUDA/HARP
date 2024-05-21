@@ -16,13 +16,14 @@ def load_config(file_path):
     config = json.loads(json_str)
     return config
 
-def parse(args):
-    config = load_config(args.config)
+def parse(config_path):
+    config = load_config(config_path)
     config["input_folder_path"] = config["pipeline"]["input_folder_path"]
     config["result_folder_path"] = config["pipeline"]["result_folder_path"]
     config["batch_size"] = config["pipeline"]["batch_size"]
     config["gpu_id"] = config["pipeline"]["gpu_id"]
     config["image_size"] = config["pipeline"]["image_size"]
+    config["save_images"] = config["pipeline"]["save_restored_image_mask"]
     
     config["anomalib_config_path"] = manage_path(config["pipeline"]["anomalib"]["config_path"])
     config["anomalib_model_path"] = config["pipeline"]["anomalib"]["model_path"]

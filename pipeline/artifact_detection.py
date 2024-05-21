@@ -1,11 +1,11 @@
 import os
+import cv2
 import shutil
 import warnings
 from pathlib import Path
 
 from pytorch_lightning import Trainer
 from torch.utils.data import DataLoader
-from core.util import save_tensor_as_img
 
 from anomalib.config import get_configurable_parameters
 from anomalib.data.inference import InferenceDataset
@@ -60,7 +60,7 @@ class ArtifactDetector:
         try:
             for image in inpainted_image_list:
                 inpainted_file_path = os.path.join(temp_path, image["name"]+"_"+str(image["index"])+".png")
-                save_tensor_as_img(image["restored_image"], inpainted_file_path)
+                cv2.imwrite(inpainted_file_path, image["restored_image"])
                 
             predictions = self.artifact_detection(temp_path)
 
@@ -72,8 +72,8 @@ class ArtifactDetector:
                     if image["name"] == name and image["index"] == int(index):
                         image["artifact_pred"] = pred_score
 
-        except Exception as e:
-            print("Executing cleanup code before exiting...")
+        # except Exception as e:
+        #     print("Executing cleanup code before exiting...")
         finally:                
             shutil.rmtree(temp_path)
         return inpainted_image_list
