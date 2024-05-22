@@ -2,6 +2,7 @@
 experiments/
 utils/
 result/
+fastflow/ 
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

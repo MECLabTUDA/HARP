@@ -16,16 +16,13 @@ This is the official code repository for *Unsupervised Histopathological Artifac
 
 
 ## Installation
-To set up HARP, start by cloning the repository and navigate to the `environment.yaml` file to install the [conda](https://conda.io/) environment named `harp`. Activate the Conda environment. We also need a specific version of the [Anomalib](https://github.com/openvinotoolkit/anomalib.git) repo. Follow the instructions below to install them:
+To set up HARP, start by cloning the repository and navigate to the `environment.yaml` file to install the [conda](https://conda.io/) environment named `harp`. Activate the Conda environment.
 
-```
+```shell
 git clone https://github.com/MECLabTUDA/HARP.git
 cd HARP
 conda env create -f environment.yaml
 conda activate harp
-
-cd .. && git clone --branch v0.7.0 https://github.com/openvinotoolkit/anomalib.git
-cd anomalib && pip install -e .
 ```
 
 
@@ -52,6 +49,17 @@ python train_restoration.py -p train -c config/config_restoration_model.json
 3. To run the `HARP` pipeline, use the script below. Update the input and output path in the `config/config_harp.json`. Also make sure to update the model checkpoint paths as shown in [Model Checkpoints](#model-checkpoints-and-dataset). 
 ```
 python harp_pipeline.py -c config/config_harp.json
+```
+
+## Usage as PyPI Package
+```python
+from harp_pipeline import HARP, HARPDataset
+
+harp = HARP("path/to/config_harp.json")
+dataset = HARPDataset(harp.config["input_folder_path"], harp.config["image_size"])
+
+for image in dataset:
+        restored_image, restored_mask = harp.harp_pipeline(image)
 ```
 
 
