@@ -20,8 +20,7 @@ setup(
         'torchmetrics',
         'torchvision',
         'tqdm',
-        'zarr',
-        'segment-anything @ git+https://github.com/facebookresearch/segment-anything.git'
+        'zarr'
     ],
     description='Histological Artifact Restoration Pipeline',
     long_description=open('README.md').read(),
