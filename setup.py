@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='HARPipe',
-    version='1.0',
+    version='1.1',
     packages=find_packages(),
     python_requires='>=3.11.4',
     install_requires=[
