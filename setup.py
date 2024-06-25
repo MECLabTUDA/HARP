@@ -22,7 +22,7 @@ setup(
         'tqdm',
         'zarr',
         'segment-anything @ git+https://github.com/facebookresearch/segment-anything.git'
-    ]],  # List your project's dependencies here
+    ],
     description='Histological Artifact Restoration Pipeline',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
