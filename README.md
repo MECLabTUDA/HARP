@@ -60,7 +60,7 @@ python harp_pipeline.py -c config/config_harp.json
 
 ## Usage as PyPI Package
 ```python
-from harp_pipeline import HARP, HARPDataset
+from harpipe import HARP, HARPDataset
 
 harp = HARP("path/to/config_harp.json")
 dataset = HARPDataset(harp.config["input_folder_path"], harp.config["image_size"])
