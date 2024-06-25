@@ -1,5 +1,12 @@
 # HARP: Unsupervised Histopathological Artifact Restoration
 This is the official code repository for *Unsupervised Histopathological Artifact Restoration Pipeline ([HARP](openreview.net/forum?id=bVunbe4hoV))*. Reliability of histopathological analysis is often challenged by artifacts introduced during sample preparation and imaging, ranging from staining inconsistencies to physical obstructions. While there's been a recent emergence in the domain of artifact restoration in histopathological images, all of them rely on supervised methodologies, requiring considerable manual input or supervision on artifacts for effective WSI restoration. So to address this, we introduce HARP, a novel, fully unsupervised histopathological artifact restoration pipeline, that integrates artifact detection, localization, and restoration into one pipeline.
+
+To install via PyPi please run:
+```shell
+pip install HARPipe
+pip install 'git+https://github.com/facebookresearch/segment-anything.git'
+```
+        
 <div>
 <img src="figure/artifact_restoration.png" width="85%"/>
 </p>
