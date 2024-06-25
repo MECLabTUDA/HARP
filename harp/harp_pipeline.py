@@ -3,13 +3,13 @@ import cv2
 import argparse
 import numpy as np
 
-from pipeline.parser import *
-from pipeline.harp_dataset import HARPDataset
-from pipeline.artifact_detection import ArtifactDetector
-from pipeline.artifact_segmentation import ArtifactSegment
-from pipeline.artifact_restoration import RestorationModel
-from pipeline.heatmap import create_heatmap
-from pipeline.artifact_ranking import artifact_ranking, artifact_inverting
+from harp.pipeline.parser import *
+from harp.pipeline.harp_dataset import HARPDataset
+from harp.pipeline.artifact_detection import ArtifactDetector
+from harp.pipeline.artifact_segmentation import ArtifactSegment
+from harp.pipeline.artifact_restoration import RestorationModel
+from harp.pipeline.heatmap import create_heatmap
+from harp.pipeline.artifact_ranking import artifact_ranking, artifact_inverting
 
 class HARP:
     def __init__(self, config_path):

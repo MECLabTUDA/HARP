@@ -5,7 +5,7 @@ from datetime import datetime
 import logging
 import pandas as pd
 
-import core.util as Util
+import harp.core.util as Util
 
 class InfoLogger():
     """

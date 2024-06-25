@@ -5,8 +5,8 @@ from torch.utils.data.distributed import DistributedSampler
 from torch import Generator, randperm
 from torch.utils.data import DataLoader, Subset
 
-import core.util as Util
-from core.praser import init_obj
+import harp.core.util as Util
+from harp.core.praser import init_obj
 
 
 def define_dataloader(logger, opt):

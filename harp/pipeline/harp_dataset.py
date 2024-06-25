@@ -1,6 +1,6 @@
 from torch.utils.data import Dataset
 from torchvision import transforms
-from core.util import set_device
+from harp.core.util import set_device
 from PIL import Image
 import cv2
 import os

@@ -1,7 +1,7 @@
 import torch
 import tqdm
-from core.base_model import BaseModel
-from core.logger import LogTracker
+from harp.core.base_model import BaseModel
+from harp.core.logger import LogTracker
 import copy
 class EMA():
     def __init__(self, beta=0.9999):

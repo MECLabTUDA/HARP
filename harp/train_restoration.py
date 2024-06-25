@@ -4,11 +4,11 @@ import warnings
 import torch
 import torch.multiprocessing as mp
 
-from core.logger import VisualWriter, InfoLogger
-import core.praser as Praser
-import core.util as Util
-from data import define_dataloader
-from models import create_model, define_network, define_loss, define_metric
+from harp.core.logger import VisualWriter, InfoLogger
+import harp.core.praser as Praser
+import harp.core.util as Util
+from harp.data import define_dataloader
+from harp.models import create_model, define_network, define_loss, define_metric
 
 def main_worker(gpu, ngpus_per_node, opt):
     """  threads running on each GPU """

@@ -4,8 +4,8 @@ import cv2
 import numpy as np
 from torchvision import transforms
 
-from core.util import set_device, tensor2image
-from models.network import Network
+from harp.core.util import set_device, tensor2image
+from harp.models.network import Network
 
 class RestorationModel:
     def __init__(self, config):

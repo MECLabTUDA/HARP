@@ -1,7 +1,7 @@
 import json
 import os
 import argparse
-import core.praser as Praser
+import harp.core.praser as Praser
 
 def manage_path(dir):
     base_path = os.path.dirname(os.path.dirname(__file__))

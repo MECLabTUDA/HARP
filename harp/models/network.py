@@ -4,8 +4,9 @@ from inspect import isfunction
 from functools import partial
 import numpy as np
 from tqdm import tqdm
-from core.base_network import BaseNetwork
+from harp.core.base_network import BaseNetwork
 from .guided_diffusion_modules.unet import UNet
+
 class Network(BaseNetwork):
     def __init__(self, unet, beta_schedule, module_name='guided_diffusion', **kwargs):
         super(Network, self).__init__(**kwargs)
