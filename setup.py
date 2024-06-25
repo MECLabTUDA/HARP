@@ -13,7 +13,6 @@ setup(
     url='https://github.com/MECLabTUDA/HARP',
     classifiers=[
         'Programming Language :: Python :: 3',
-        'License :: OSI Approved :: Creative Commons Attribution 4.0 International License',
         'Operating System :: OS Independent',
     ],
 )
