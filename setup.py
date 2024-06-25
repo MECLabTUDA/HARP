@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='HARPipe',
-    version='1.0.1',
+    version='1.0',
     packages=find_packages(),
     install_requires=[],  # List your project's dependencies here
     description='Histological Artifact Restoration Pipeline',
