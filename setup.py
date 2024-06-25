@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='HARPipe',
-    version='1.1',
+    version='1.1.1',
     packages=find_packages(),
     python_requires='>=3.11.4',
     install_requires=[
@@ -20,8 +20,7 @@ setup(
         'torchmetrics',
         'torchvision',
         'tqdm',
-        'zarr',
-        'git+https://github.com/facebookresearch/segment-anything.git'
+        'zarr'
     ],
     description='Histological Artifact Restoration Pipeline',
     long_description=open('README.md').read(),
