@@ -1,82 +1,95 @@
 import os
 import cv2
 import argparse
+import numpy as np
 
-from core.util import save_tensor_as_img
 from pipeline.parser import *
+from pipeline.harp_dataset import HARPDataset
+from pipeline.artifact_detection import ArtifactDetector
+from pipeline.artifact_segmentation import ArtifactSegment
+from pipeline.artifact_restoration import RestorationModel
 from pipeline.heatmap import create_heatmap
-from pipeline.segment_anything import create_sam_masks
-from pipeline.dbscan_colored import create_dbscan_mask
 from pipeline.artifact_ranking import artifact_ranking, artifact_inverting
-from pipeline.artifact_detection import *
-from pipeline.inpainting import *
 
-def harp_pipeline(config, image_name):
-    image_path = os.path.join(config["image_folder_path"], image_name)
-    result_path = config["result_folder_path"]
-    os.makedirs(result_path, exist_ok=True)
-    
-    print("Detecting Artifacts: " + image_name)
-    artifact_pred = artifact_detection(config["anomalib_config_path"], config["anomalib_model_path"], image_path)
-    artifact_pred = artifact_pred[0]["pred_scores"].numpy().item()
-    
-    if artifact_pred < config["anomalib_prediction_threshold"]:
-        print("No artifacts detected.")
-    
-    else: 
-        print("Artifact detected. Restoring...")
-        #FYI: Noising and denoising cycle
-        noised_denoised_images = restoration_model.noising_and_denoising_map(image_path, config["n_noising_step"], config["n_iter"], config["batch_size"])
-        heatmap = create_heatmap(noised_denoised_images, image_path)
-        
-        #FYI: Create both SAM and DBSCAN mask
-        sam_mask_list = create_sam_masks(image_path, config)
-        dbscan_mask_list = create_dbscan_mask(image_path)
-        combined_mask_list = sam_mask_list + dbscan_mask_list
-        
-        #FYI: Create inverted masks for masks covering more than 50%
-        combined_mask_list = artifact_inverting(combined_mask_list)
+class HARP:
+    def __init__(self, config_path):
+        config = parse(config_path)
+        self.config = config
+        self.artifact_detector = ArtifactDetector(config)
+        self.artifact_segmentation = ArtifactSegment(config)
+        self.restoration_model = RestorationModel(config)
+        os.makedirs(config["result_folder_path"], exist_ok=True)
 
-        #FYI: Calculate mask scores and sort them and rank them
-        ranked_mask_list = artifact_ranking(combined_mask_list, heatmap, image_path)
-        ranked_mask_list = ranked_mask_list[:config["restoration_top_k"]]
+    def save_image(self, config, best_mask_restored_image):
+        cv2.imwrite(os.path.join(config["result_folder_path"], image["image_name"]), best_mask_restored_image["restored_image"])
+        cv2.imwrite(os.path.join(config["result_folder_path"], "mask_"+image["image_name"]), best_mask_restored_image["mask_dilated"])
 
-        #FYI: Do inpainting on the top k masks
-        for mask in ranked_mask_list:
+    def process_masks(self, mask_restored_image_list):
+        kernel_size = 10
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel_size, kernel_size))
+        for mask in mask_restored_image_list:
             #FYI: Need to increase mask size slightly to avoid the seeing artifact boundary after inpainting
-            #FYI: Only saving the top k mask with slightly enlarged ones
-            kernel_size = 10
-            kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel_size, kernel_size))
             dilated_mask = cv2.dilate(mask["mask"], kernel, iterations=1)
-
             #FYI: For DBSCAN mask do second higher dilations
             if mask["name"] == "dbscan":
                 dilated_mask = cv2.dilate(dilated_mask, kernel, iterations=2)
             mask["mask_dilated"] = dilated_mask
+        return mask_restored_image_list
 
-        #FYI: Doing inpainting here
-        print("Generating inpaint images: " + image_name)
-        inpainted_image_list = restoration_model.inpaint_with_jump_sampling(image_path, ranked_mask_list, config["batch_size"])
+
+    def harp_pipeline(self, image):
+        print("Detecting Artifacts: " + image["image_name"])
+        artifact_pred = self.artifact_detector.artifact_detection(image["image_path"])
+        artifact_pred = artifact_pred[0]["pred_scores"].numpy().item()
         
-        #FYI: Doing artifact detection on restored images and ranking them
-        inpainted_image_list = inpaint_ranking(config["anomalib_config_path"], config["anomalib_model_path"], config["result_folder_path"], inpainted_image_list)
+        if artifact_pred < self.config["anomalib_prediction_threshold"]:
+            #FYI: If no artifact detected, will return same image with empty mask
+            print("No artifacts detected in: " + image["image_name"] + ". Skipping...")
+            return image["image"], np.zeros_like(image["image"][0])
         
-        #FYI: Saving the restored image with least score
-        inpainted_image_list = sorted(inpainted_image_list, key=lambda x: x["artifact_pred"])
-        best_restored_image = inpainted_image_list[0]
-        save_tensor_as_img(best_restored_image["restored_image"], os.path.join(result_path, image_name))
-        cv2.imwrite(os.path.join(result_path, "mask_"+image_name), best_restored_image["mask_dilated"])
+        else: 
+            print("Artifact detected. Restoring image: " + image["image_name"])
+            #FYI: Noising and denoising cycle
+            reconstructed_images = self.restoration_model.noising_and_denoising_map(self.config, image["image_tensor"])
+            heatmap = create_heatmap(reconstructed_images, image["image"])
+            
+            #FYI: Create both SAM and DBSCAN mask
+            sam_mask_list = self.artifact_segmentation.create_sam_masks(image["image"])
+            dbscan_mask_list = self.artifact_segmentation.create_dbscan_mask(image["image"])
+            combined_mask_list = sam_mask_list + dbscan_mask_list
+            
+            #FYI: Create inverted masks for masks covering more than 50%
+            combined_mask_list = artifact_inverting(combined_mask_list)
+
+            #FYI: Calculate mask scores and sort them and rank them
+            mask_restored_image_list = artifact_ranking(combined_mask_list, heatmap, image["image"])
+            mask_restored_image_list = mask_restored_image_list[:self.config["restoration_top_k"]]
+
+            #FYI: Process masks for inpainting
+            mask_restored_image_list = self.process_masks(mask_restored_image_list)
+
+            #FYI: Doing inpainting here
+            print("Generating restored images: " + image["image_name"])
+            mask_restored_image_list = self.restoration_model.inpaint_with_jump_sampling(image["image_tensor"], mask_restored_image_list, self.config["batch_size"])
+            
+            #FYI: Doing artifact detection on restored images and ranking them
+            mask_restored_image_list = self.artifact_detector.inpaint_ranking(mask_restored_image_list)
+            
+            #FYI: Saving the restored image with least score
+            mask_restored_image_list = sorted(mask_restored_image_list, key=lambda x: x["artifact_pred"])
+            best_mask_restored_image = mask_restored_image_list[0]
+            if self.config["save_images"]:
+                self.save_image(self.config, best_mask_restored_image)
+
+            return best_mask_restored_image["restored_image"], best_mask_restored_image["mask_dilated"]
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--config', type=manage_path, default='./config/config_harp.json', help='JSON file for config')
     args_harp = parser.parse_args()
-    config_harp = parse(args_harp)
 
-    restoration_model = ModelLoader(config_harp)
-    
-    image_list = os.listdir(config_harp["image_folder_path"])
+    harp = HARP(args_harp.config)
+    dataset = HARPDataset(harp.config["input_folder_path"], harp.config["image_size"])
 
-    for image in image_list:
-        image_name = os.path.basename(image)
-        harp_pipeline(config_harp, image_name)
+    for image in dataset:
+            restored_image, restored_mask = harp.harp_pipeline(image)

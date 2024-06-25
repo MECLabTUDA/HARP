@@ -16,14 +16,14 @@ def load_config(file_path):
     config = json.loads(json_str)
     return config
 
-def parse(args):
-    config = load_config(args.config)
-    config["image_folder_path"] = config["pipeline"]["image_folder_path"]
+def parse(config_path):
+    config = load_config(config_path)
+    config["input_folder_path"] = config["pipeline"]["input_folder_path"]
     config["result_folder_path"] = config["pipeline"]["result_folder_path"]
     config["batch_size"] = config["pipeline"]["batch_size"]
+    config["gpu_id"] = config["pipeline"]["gpu_id"]
     config["image_size"] = config["pipeline"]["image_size"]
-    config["device"] = "cuda"
-    config["gpu_id"] = "0"
+    config["save_images"] = config["pipeline"]["save_restored_image_mask"]
     
     config["anomalib_config_path"] = manage_path(config["pipeline"]["anomalib"]["config_path"])
     config["anomalib_model_path"] = config["pipeline"]["anomalib"]["model_path"]
@@ -42,7 +42,7 @@ def parse(args):
     args = argparse.Namespace(config=config["restoration_config_path"], 
                               phase="test",
                               batch=config["batch_size"],
-                              gpu_ids=config["gpu_id"],
+                              gpu_ids=str(config["gpu_id"]),
                               debug=False)
     opt = Praser.parse(args)
     config["config_restoration"] = opt

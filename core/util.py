@@ -34,6 +34,13 @@ def tensor2img(tensor, out_type=np.uint8, min_max=(-1, 1)):
 def postprocess(images):
 	return [tensor2img(image) for image in images]
 
+def tensor2image(tensor_img):
+	tensor_img = tensor_img.detach().float().cpu()
+	output_img = tensor_img[0,:,:,:].permute(1, 2, 0).numpy()
+	output_img = ((output_img+1) * 127.5).round()
+	output_img = cv2.cvtColor(output_img, cv2.COLOR_RGB2BGR)
+	return output_img
+
 def save_tensor_as_img(tensor_img, result_path):
 	tensor_img = tensor_img.detach().float().cpu()
 	output_img = tensor_img[0,:,:,:].permute(1, 2, 0).numpy()
