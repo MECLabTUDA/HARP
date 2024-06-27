@@ -28,9 +28,9 @@ conda activate harp
 To install via PyPi please run:
 ```shell
 conda create -n harp python=3.11
+conda activate harp
 pip install HARPipe
 pip install 'git+https://github.com/facebookresearch/segment-anything.git'
-conda activate harp
 ```
 
 
