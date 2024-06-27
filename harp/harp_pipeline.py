@@ -20,9 +20,9 @@ class HARP:
         self.restoration_model = RestorationModel(config)
         os.makedirs(config["result_folder_path"], exist_ok=True)
 
-    def save_image(self, config, best_mask_restored_image):
-        cv2.imwrite(os.path.join(config["result_folder_path"], image["image_name"]), best_mask_restored_image["restored_image"])
-        cv2.imwrite(os.path.join(config["result_folder_path"], "mask_"+image["image_name"]), best_mask_restored_image["mask_dilated"])
+    def save_image(self, config, image_name, best_mask_restored_image):
+        cv2.imwrite(os.path.join(config["result_folder_path"], image_name), best_mask_restored_image["restored_image"])
+        cv2.imwrite(os.path.join(config["result_folder_path"], "mask_"+image_name), best_mask_restored_image["mask_dilated"])
 
     def process_masks(self, mask_restored_image_list):
         kernel_size = 10
@@ -79,7 +79,7 @@ class HARP:
             mask_restored_image_list = sorted(mask_restored_image_list, key=lambda x: x["artifact_pred"])
             best_mask_restored_image = mask_restored_image_list[0]
             if self.config["save_images"]:
-                self.save_image(self.config, best_mask_restored_image)
+                self.save_image(self.config, image["image_name"], best_mask_restored_image)
 
             return best_mask_restored_image["restored_image"], best_mask_restored_image["mask_dilated"]
 

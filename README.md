@@ -1,11 +1,5 @@
 # HARP: Unsupervised Histopathological Artifact Restoration
 This is the official code repository for *Unsupervised Histopathological Artifact Restoration Pipeline ([HARP](openreview.net/forum?id=bVunbe4hoV))*. Reliability of histopathological analysis is often challenged by artifacts introduced during sample preparation and imaging, ranging from staining inconsistencies to physical obstructions. While there's been a recent emergence in the domain of artifact restoration in histopathological images, all of them rely on supervised methodologies, requiring considerable manual input or supervision on artifacts for effective WSI restoration. So to address this, we introduce HARP, a novel, fully unsupervised histopathological artifact restoration pipeline, that integrates artifact detection, localization, and restoration into one pipeline.
-
-To install via PyPi please run:
-```shell
-pip install HARPipe
-pip install 'git+https://github.com/facebookresearch/segment-anything.git'
-```
         
 <div>
 <img src="figure/artifact_restoration.png" width="85%"/>
@@ -24,11 +18,18 @@ pip install 'git+https://github.com/facebookresearch/segment-anything.git'
 
 ## Installation
 To set up HARP, start by cloning the repository and navigate to the `environment.yaml` file to install the [conda](https://conda.io/) environment named `harp`. Activate the Conda environment.
-
 ```shell
 git clone https://github.com/MECLabTUDA/HARP.git
 cd HARP
 conda env create -f environment.yaml
+conda activate harp
+```
+
+To install via PyPi please run:
+```shell
+conda create -n harp python=3.11
+pip install HARPipe
+pip install 'git+https://github.com/facebookresearch/segment-anything.git'
 conda activate harp
 ```
 
@@ -60,7 +61,8 @@ python harp_pipeline.py -c config/config_harp.json
 
 ## Usage as PyPI Package
 ```python
-from harpipe import HARP, HARPDataset
+from harp.harp_pipeline import HARP
+from harp.pipeline.harp_dataset import HARPDataset
 
 harp = HARP("path/to/config_harp.json")
 dataset = HARPDataset(harp.config["input_folder_path"], harp.config["image_size"])
